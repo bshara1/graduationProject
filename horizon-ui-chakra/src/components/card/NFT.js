@@ -104,8 +104,7 @@ export default function NFT(props) {
                 borderRadius='70px'
                 px='24px'
                 marginX='5px'
-                py='5px'>
-                Delete
+                py='5px'>  Delete
               </Button> */}
             </Link>
           </Flex>
