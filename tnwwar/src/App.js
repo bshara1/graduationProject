@@ -63,7 +63,7 @@ function App() {
             <Route path="/check-out" element={<PrivateRoute element={<CheckOut />} />} />
             <Route path="/productDetails/:id" element={<ProductDetails />} />
             <Route path="/category/:categoryName" element={<CategoryProducts />} />
-            <Route path="/updateUser" element={<UpdateUserData />} />
+            <Route path="/updateUser" element={<PrivateRoute element={<UpdateUserData />} />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         )}

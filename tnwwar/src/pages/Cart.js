@@ -7,7 +7,7 @@ import CartItems from '../components/Cart/CartItems';
 
 
 
-function HomeScreen() {
+function Cart() {
   const { activeTab, handleTabChange } = useTabNavigation();
 
   return (
@@ -29,4 +29,4 @@ function HomeScreen() {
   );
 }
 
-export default HomeScreen;
+export default Cart;

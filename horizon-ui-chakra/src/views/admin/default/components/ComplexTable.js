@@ -1,7 +1,8 @@
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Flex,
   Table,
-  Progress,
+  IconButton,
   Icon,
   Tbody,
   Td,
@@ -10,62 +11,96 @@ import {
   Thead,
   Tr,
   useColorModeValue,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  Image,
 } from "@chakra-ui/react";
-import React, { useMemo } from "react";
-import {
-  useGlobalFilter,
-  usePagination,
-  useSortBy,
-  useTable,
-} from "react-table";
+import { useGlobalFilter, usePagination, useSortBy, useTable } from "react-table";
+import { MdCheckCircle, MdCancel, MdOutlineError, MdThumbUp } from "react-icons/md";
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 // Custom components
 import Card from "components/card/Card";
 import Menu from "components/menu/MainMenu";
 
-// Assets
-import { MdCheckCircle, MdCancel, MdOutlineError } from "react-icons/md";
-export default function ColumnsTable(props) {
-  const { columnsData, tableData } = props;
+export default function ColumnsTable() {
+  const [tableData, setTableData] = useState([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  useEffect(() => {
+    // Fetch sellers data from API
+    axios.get('http://localhost:8080/getSellers')
+      .then(response => {
+        setTableData(response.data.users);
+      })
+      .catch(error => {
+        console.error("There was an error fetching the sellers!", error);
+      });
+  }, []);
+
+  const columnsData = useMemo(() => [
+    { Header: "NAME", accessor: "user_name" },
+    { Header: "Email", accessor: "user_email" },
+    { Header: "Record", accessor: "Commercial_Record" },
+    { Header: "Approved", accessor: "is_deleted" },
+    { Header: "Actions", accessor: "actions" }
+  ], []);
 
   const columns = useMemo(() => columnsData, [columnsData]);
   const data = useMemo(() => tableData, [tableData]);
 
   const tableInstance = useTable(
-    {
-      columns,
-      data,
-    },
+    { columns, data },
     useGlobalFilter,
     useSortBy,
     usePagination
   );
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    prepareRow,
-    initialState,
-  } = tableInstance;
+  const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow, initialState } = tableInstance;
   initialState.pageSize = 5;
 
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
+
+  const handleApprove = (id) => {
+    // API call to approve seller
+        const token = Cookies.get('AdminAccessToken');
+        axios.put(`http://localhost:8080/sellerAccept/${id}`, {}, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+        })
+        .then(response => {
+        // Update the table data after approval
+        setTableData(prevData => 
+            prevData.map(seller => 
+            seller._id === id ? { ...seller, is_deleted: false } : seller
+            )
+        );
+        })
+        .catch(error => {
+        console.error("There was an error approving the seller!", error);
+        });
+  };
+
+  const handleShowImage = (image) => {
+    setSelectedImage(image);
+    onOpen();
+  };
+
   return (
-    <Card
-      direction='column'
-      w='100%'
-      px='0px'
-      overflowX={{ sm: "scroll", lg: "hidden" }}>
+    <Card direction='column' w='100%' px='0px' overflowX={{ sm: "scroll", lg: "hidden" }}>
       <Flex px='25px' justify='space-between' mb='10px' align='center'>
-        <Text
-          color={textColor}
-          fontSize='22px'
-          fontWeight='700'
-          lineHeight='100%'>
-          Complex Table
+        <Text color={textColor} fontSize='22px' fontWeight='700' lineHeight='100%'>
+          Sellers
         </Text>
         <Menu />
       </Flex>
@@ -74,16 +109,8 @@ export default function ColumnsTable(props) {
           {headerGroups.map((headerGroup, index) => (
             <Tr {...headerGroup.getHeaderGroupProps()} key={index}>
               {headerGroup.headers.map((column, index) => (
-                <Th
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                  pe='10px'
-                  key={index}
-                  borderColor={borderColor}>
-                  <Flex
-                    justify='space-between'
-                    align='center'
-                    fontSize={{ sm: "10px", lg: "12px" }}
-                    color='gray.400'>
+                <Th {...column.getHeaderProps(column.getSortByToggleProps())} pe='10px' key={index} borderColor={borderColor}>
+                  <Flex justify='space-between' align='center' fontSize={{ sm: "10px", lg: "12px" }} color='gray.400'>
                     {column.render("Header")}
                   </Flex>
                 </Th>
@@ -99,12 +126,8 @@ export default function ColumnsTable(props) {
                 {row.cells.map((cell, index) => {
                   let data = "";
                   if (cell.column.Header === "NAME") {
-                    data = (
-                      <Text color={textColor} fontSize='sm' fontWeight='700'>
-                        {cell.value}
-                      </Text>
-                    );
-                  } else if (cell.column.Header === "STATUS") {
+                    data = <Text color={textColor} fontSize='sm' fontWeight='700'>{cell.value}</Text>;
+                  } else if (cell.column.Header === "Approved") {
                     data = (
                       <Flex align='center'>
                         <Icon
@@ -112,47 +135,38 @@ export default function ColumnsTable(props) {
                           h='24px'
                           me='5px'
                           color={
-                            cell.value === "Approved"
-                              ? "green.500"
-                              : cell.value === "Disable"
-                              ? "red.500"
-                              : cell.value === "Error"
-                              ? "orange.500"
-                              : null
+                            cell.value === false ? "green.500" :
+                            cell.value === true ? "red.500" :
+                            cell.value === null ? "orange.500" : null
                           }
                           as={
-                            cell.value === "Approved"
-                              ? MdCheckCircle
-                              : cell.value === "Disable"
-                              ? MdCancel
-                              : cell.value === "Error"
-                              ? MdOutlineError
-                              : null
+                            cell.value === false ? MdCheckCircle :
+                            cell.value === true ? MdCancel :
+                            cell.value === null ? MdOutlineError : null
                           }
                         />
-                        <Text color={textColor} fontSize='sm' fontWeight='700'>
-                          {cell.value}
-                        </Text>
+                        <Text color={textColor} fontSize='sm' fontWeight='700'>{cell.value}</Text>
                       </Flex>
                     );
-                  } else if (cell.column.Header === "DATE") {
+                  } else if (cell.column.Header === "Record") {
                     data = (
-                      <Text color={textColor} fontSize='sm' fontWeight='700'>
-                        {cell.value}
-                      </Text>
+                      <Button onClick={() => handleShowImage(cell.value)} colorScheme="teal" size="sm">
+                        View Record
+                      </Button>
                     );
-                  } else if (cell.column.Header === "PROGRESS") {
+                  } else if (cell.column.Header === "Actions") {
                     data = (
-                      <Flex align='center'>
-                        <Progress
-                          variant='table'
-                          colorScheme='brandScheme'
-                          h='8px'
-                          w='108px'
-                          value={cell.value}
+                      <Flex justify='center'>
+                        <IconButton
+                          aria-label="Approve Seller"
+                          icon={<MdThumbUp />}
+                          colorScheme="teal"
+                          onClick={() => handleApprove(row.original._id)}
                         />
                       </Flex>
                     );
+                  } else {
+                    data = <Text color={textColor} fontSize='sm' fontWeight='700'>{cell.value}</Text>;
                   }
                   return (
                     <Td
@@ -172,6 +186,18 @@ export default function ColumnsTable(props) {
           })}
         </Tbody>
       </Table>
+      
+      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Commercial Record</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {/* <Image src={selectedImage} alt="Commercial Record" /> */}
+            <img src={selectedImage} alt="Commercial Record" ></img>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Card>
   );
 }

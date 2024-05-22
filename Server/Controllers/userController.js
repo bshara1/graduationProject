@@ -210,7 +210,8 @@ async function deleteFromWishlist(req, res){
 
 async function createSeller(req, res){
     try {
-      const { user_name, user_email, password, phone_number, user_location, Commercial_Record} = req.body;
+      const Commercial_Record = res.locals.site;
+      const { user_name, user_email, password, phone_number, user_location } = req.body;
       const valid = validation(user_name, user_email, password, phone_number);
       if (valid){
           let user_password = await bcrypt.hash(password, 10);
@@ -368,7 +369,11 @@ async function acceptSeller(req, res){
     try{
         const sellerID = req.params.id;
         const acceptedSeller = await userModel.findById(sellerID);
-        acceptedSeller.is_deleted = false;
+        if(acceptedSeller.is_deleted == false){
+            acceptedSeller.is_deleted = true;
+        }else{
+            acceptedSeller.is_deleted = false;
+        }
         acceptedSeller.save();
         res.status(201).json(acceptedSeller);
     }catch(error){
@@ -426,6 +431,30 @@ async function updateUserPassword(req, res) {
     }
 };
 
+async function getRegUsers(req, res){
+    try{
+        const users = await userModel.find().where({
+            user_role: 1,
+        });
+        res.status(200).json({users: users});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Error in get RegUsers" });
+    }
+};
+
+async function getSellers(req, res){
+    try{
+        const sellers = await userModel.find().where({
+            user_role: 2,
+        });
+        res.status(200).json({users: sellers});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Error in get RegUsers" });
+    }
+};
+
 module.exports = {
     createUser,
     loginUser,
@@ -444,4 +473,6 @@ module.exports = {
     acceptSeller,
     getSellersRequests,
     updateUserPassword,
+    getRegUsers,
+    getSellers,
 };

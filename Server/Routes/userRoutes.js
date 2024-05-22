@@ -9,7 +9,7 @@ router.post('/adminRegister', userControllers.createAdmin);
 router.post('/adminLogin', userControllers.loginAdmin);
 
 router.post('/sellerLogin', userControllers.loginSeller);
-router.post('/sellerSignUp', userControllers.createSeller);
+router.post('/sellerSignUp', uploadImg.uploadImg, userControllers.createSeller);
 
 router.post('/userLogin', userControllers.createUser);
 router.post('/userRegister', userControllers.loginUser);
@@ -27,5 +27,8 @@ router.delete('/deleteFromWishlist/:id', userAuth.authorize, userControllers.del
 
 router.put('/sellerAccept/:id', adminAuth.authorize, userControllers.acceptSeller);
 router.get('/sellersRequests', userControllers.getSellersRequests);
+
+router.get('/getRegUsers', userControllers.getRegUsers);
+router.get('/getSellers', userControllers.getSellers);
 
 module.exports = router;

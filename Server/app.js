@@ -28,7 +28,17 @@ app.use(reactionroutes);
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => logger.info('Connected to MongoDB'))
   .catch((error) => console.error('MongoDB connection error:', error));
-
+const user = require('./Model/user');
+const role = require('./Model/role');
+const visa = require('./Model/visaCard');
+const product = require('./Model/product');
+const payment = require('./Model/payment');
+const cart = require('./Model/cart');
+const category = require('./Model/category');
+const discount = require('./Model/discount');
+const wishlist = require('./Model/wishlist');
+const comment = require('./Model/comment');
+const rating = require('./Model/rating');
 app.listen(process.env.PORT, () => {
     logger.info(`Server is running on port ${process.env.PORT}`);
 });

@@ -85,7 +85,7 @@ export default function NFT(props) {
                 xl: "10px",
                 "2xl": "0px",
               }}>
-              <Button
+              {/* <Button
                 variant='darkBrand'
                 color='white'
                 fontSize='sm'
@@ -95,8 +95,8 @@ export default function NFT(props) {
                 marginX='5px'
                 py='5px'>
                 view
-              </Button>
-              <Button
+              </Button> */}
+              {/* <Button
                 variant='darkBrand'
                 color='white'
                 fontSize='sm'
@@ -106,7 +106,7 @@ export default function NFT(props) {
                 marginX='5px'
                 py='5px'>
                 Delete
-              </Button>
+              </Button> */}
             </Link>
           </Flex>
         </Flex>

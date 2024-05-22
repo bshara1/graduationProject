@@ -125,8 +125,9 @@ export default function UserReports() {
 
       <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px' mb='20px'>
         {/* <TotalSpent /> */}
-        <WeeklyRevenue />
+        {/* <WeeklyRevenue /> */}
         <Tasks />
+        <MiniCalendar h='100%' minW='auto' selectRange={false} />
       </SimpleGrid>
       {/* <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'> */}
         {/* <CheckTable columnsData={columnsDataCheck} tableData={tableDataCheck} /> */}
@@ -135,14 +136,14 @@ export default function UserReports() {
           {/* <PieCard /> */}
         {/* </SimpleGrid> */}
       {/* </SimpleGrid> */}
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
+      <SimpleGrid columns={{ base: 1, md: 1, xl: 1 }} gap='20px' mb='20px'>
         <ComplexTable
           columnsData={columnsDataComplex}
           tableData={tableDataComplex}
         />
-        <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
-          <MiniCalendar h='100%' minW='100%' selectRange={false} />
-        </SimpleGrid>
+        {/* <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'> */}
+          {/* <MiniCalendar h='100%' minW='100%' selectRange={false} /> */}
+        {/* </SimpleGrid> */}
       </SimpleGrid>
     </Box>
   );

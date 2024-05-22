@@ -53,7 +53,7 @@ export default function Marketplace() {
         >
           <Banner />
           <Flex direction="column">
-            <Flex
+            {/* <Flex
               mt="45px"
               mb="20px"
               justifyContent="space-between"
@@ -97,7 +97,7 @@ export default function Marketplace() {
                   Sports
                 </Link>
               </Flex>
-            </Flex>
+            </Flex> */}
             <SimpleGrid columns={{ base: 1, md: 4 }} gap="15px" justifyItems={'center'}>
               {products.map(product => (
                 <NFT

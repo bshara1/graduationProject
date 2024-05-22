@@ -48,7 +48,7 @@ async function addRating(req, res){
                 res.status(201).json({rating, updateProductRating});
             }
         }else{
-            res.status(401).json('you dont buy this product to make a rating');
+            res.status(401).json('you dont puy this product to make a rating');
         }
     }catch(error){
         console.log(error);
