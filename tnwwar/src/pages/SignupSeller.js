@@ -124,7 +124,7 @@ function SignupSeller() {
 
             if (response.ok) {
                 setSignupSuccess(true); // Set signup success state to true
-                navigate('/login');
+                
             } else {
                 setGeneralError(data.error || 'Sign-up failed. Please try again.');
             }

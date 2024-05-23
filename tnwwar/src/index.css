@@ -680,6 +680,7 @@ color: #009393;
 /*----------------------- Sign Up Styles -----------------------*/
 
 .signup_container {
+  height: 110vh ;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -687,7 +688,7 @@ color: #009393;
   background-image: url('./assets/images/background.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center ;
   padding: 25px;
 }
 
